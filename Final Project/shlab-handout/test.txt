@@ -1,0 +1,297 @@
+zach@pendrive:~/Documents/CS392/Final Project/shlab-handout$ ./sdriver.pl -t trace01.txt -s ./tshref -a "-p"
+#
+# trace01.txt - Properly terminate on EOF.
+#
+
+
+
+zach@pendrive:~/Documents/CS392/Final Project/shlab-handout$ ./sdriver.pl -t trace02.txt -s ./tshref -a "-p"
+#
+# trace02.txt - Process builtin quit command.
+#
+
+
+
+zach@pendrive:~/Documents/CS392/Final Project/shlab-handout$ ./sdriver.pl -t trace03.txt -s ./tshref -a "-p"
+#
+# trace03.txt - Run a foreground job.
+#
+tsh> quit
+
+
+
+zach@pendrive:~/Documents/CS392/Final Project/shlab-handout$ ./sdriver.pl -t trace04.txt -s ./tshref -a "-p"
+#
+# trace04.txt - Run a background job.
+#
+tsh> ./myspin 1 &
+[1] (10155) ./myspin 1 &
+
+
+
+zach@pendrive:~/Documents/CS392/Final Project/shlab-handout$ ./sdriver.pl -t trace05.txt -s ./tshref -a "-p"
+#
+# trace05.txt - Process jobs builtin command.
+#
+tsh> ./myspin 2 &
+[1] (10163) ./myspin 2 &
+tsh> ./myspin 3 &
+[2] (10165) ./myspin 3 &
+tsh> jobs
+[1] (10163) Running ./myspin 2 &
+[2] (10165) Running ./myspin 3 &
+
+
+
+zach@pendrive:~/Documents/CS392/Final Project/shlab-handout$ ./sdriver.pl -t trace06.txt -s ./tshref -a "-p"
+#
+# trace06.txt - Forward SIGINT to foreground job.
+#
+tsh> ./myspin 4
+Job [1] (10176) terminated by signal 2
+
+
+
+zach@pendrive:~/Documents/CS392/Final Project/shlab-handout$ ./sdriver.pl -t trace07.txt -s ./tshref -a "-p"
+#
+# trace07.txt - Forward SIGINT only to foreground job.
+#
+tsh> ./myspin 4 &
+[1] (10186) ./myspin 4 &
+tsh> ./myspin 5
+Job [2] (10188) terminated by signal 2
+tsh> jobs
+[1] (10186) Running ./myspin 4 &
+
+
+
+zach@pendrive:~/Documents/CS392/Final Project/shlab-handout$ ./sdriver.pl -t trace08.txt -s ./tshref -a "-p"
+#
+# trace08.txt - Forward SIGTSTP only to foreground job.
+#
+tsh> ./myspin 4 &
+[1] (10195) ./myspin 4 &
+tsh> ./myspin 5
+Job [2] (10197) stopped by signal 20
+tsh> jobs
+[1] (10195) Running ./myspin 4 &
+[2] (10197) Stopped ./myspin 5
+
+
+
+zach@pendrive:~/Documents/CS392/Final Project/shlab-handout$ ./sdriver.pl -t trace09.txt -s ./tshref -a "-p"
+#
+# trace09.txt - Process bg builtin command
+#
+tsh> ./myspin 4 &
+[1] (10202) ./myspin 4 &
+tsh> ./myspin 5
+Job [2] (10204) stopped by signal 20
+tsh> jobs
+[1] (10202) Running ./myspin 4 &
+[2] (10204) Stopped ./myspin 5
+tsh> bg %2
+[2] (10204) ./myspin 5
+tsh> jobs
+[1] (10202) Running ./myspin 4 &
+[2] (10204) Running ./myspin 5
+
+
+
+zach@pendrive:~/Documents/CS392/Final Project/shlab-handout$ ./sdriver.pl -t trace10.txt -s ./tshref -a "-p"
+#
+# trace10.txt - Process fg builtin command.
+#
+tsh> ./myspin 4 &
+[1] (10222) ./myspin 4 &
+tsh> fg %1
+Job [1] (10222) stopped by signal 20
+tsh> jobs
+[1] (10222) Stopped ./myspin 4 &
+tsh> fg %1
+tsh> jobs
+
+
+
+zach@pendrive:~/Documents/CS392/Final Project/shlab-handout$ ./sdriver.pl -t trace11.txt -s ./tshref -a "-p"
+#
+# trace11.txt - Forward SIGINT to every process in foreground process group
+#
+tsh> ./mysplit 4
+Job [1] (10230) terminated by signal 2
+tsh> /bin/ps a
+  PID TTY      STAT   TIME COMMAND
+ 1251 tty7     Ssl+   0:00 /usr/lib/gdm3/gdm-x-session /usr/bin/gnome-session --autostart /usr/share/gdm/greeter/autostart
+ 1253 tty7     Sl+    0:01 /usr/lib/xorg/Xorg vt7 -displayfd 3 -auth /run/user/120/gdm/Xauthority -background none -noreset -keeptty -verbose 3
+ 1258 tty7     S+     0:00 dbus-daemon --print-address 4 --session
+ 1261 tty7     Sl+    0:00 /usr/lib/gnome-session/gnome-session-binary --autostart /usr/share/gdm/greeter/autostart
+ 1266 tty7     Sl+    0:00 /usr/lib/at-spi2-core/at-spi-bus-launcher
+ 1271 tty7     S+     0:00 /usr/bin/dbus-daemon --config-file=/etc/at-spi2/accessibility.conf --nofork --print-address 3
+ 1273 tty7     Sl+    0:00 /usr/lib/at-spi2-core/at-spi2-registryd --use-gnome-session
+ 1287 tty7     Sl+    0:00 /usr/lib/gnome-settings-daemon/gnome-settings-daemon
+ 1329 tty7     Sl+    0:01 gnome-shell --mode=gdm
+ 1406 tty7     Sl     0:00 ibus-daemon --xim --panel disable
+ 1411 tty7     Sl     0:00 /usr/lib/ibus/ibus-dconf
+ 1414 tty7     Sl     0:00 /usr/lib/ibus/ibus-x11 --kill-daemon
+ 1455 tty7     Sl     0:00 /usr/lib/ibus/ibus-engine-simple
+ 1484 tty1     Ss+    0:00 /sbin/agetty --noclear tty1 linux
+ 7131 pts/4    Ss+    0:00 bash
+ 7502 pts/3    Ss     0:00 bash
+10227 pts/3    S+     0:00 /usr/bin/perl ./sdriver.pl -t trace11.txt -s ./tshref -a -p
+10228 pts/3    S+     0:00 ./tshref -p
+10233 pts/3    R      0:00 /bin/ps a
+
+
+
+zach@pendrive:~/Documents/CS392/Final Project/shlab-handout$ ./sdriver.pl -t trace12.txt -s ./tshref -a "-p"
+#
+# trace12.txt - Forward SIGTSTP to every process in foreground process group
+#
+tsh> ./mysplit 4
+Job [1] (10242) stopped by signal 20
+tsh> jobs
+[1] (10242) Stopped ./mysplit 4
+tsh> /bin/ps a
+  PID TTY      STAT   TIME COMMAND
+ 1251 tty7     Ssl+   0:00 /usr/lib/gdm3/gdm-x-session /usr/bin/gnome-session --autostart /usr/share/gdm/greeter/autostart
+ 1253 tty7     Sl+    0:01 /usr/lib/xorg/Xorg vt7 -displayfd 3 -auth /run/user/120/gdm/Xauthority -background none -noreset -keeptty -verbose 3
+ 1258 tty7     S+     0:00 dbus-daemon --print-address 4 --session
+ 1261 tty7     Sl+    0:00 /usr/lib/gnome-session/gnome-session-binary --autostart /usr/share/gdm/greeter/autostart
+ 1266 tty7     Sl+    0:00 /usr/lib/at-spi2-core/at-spi-bus-launcher
+ 1271 tty7     S+     0:00 /usr/bin/dbus-daemon --config-file=/etc/at-spi2/accessibility.conf --nofork --print-address 3
+ 1273 tty7     Sl+    0:00 /usr/lib/at-spi2-core/at-spi2-registryd --use-gnome-session
+ 1287 tty7     Sl+    0:00 /usr/lib/gnome-settings-daemon/gnome-settings-daemon
+ 1329 tty7     Sl+    0:01 gnome-shell --mode=gdm
+ 1406 tty7     Sl     0:00 ibus-daemon --xim --panel disable
+ 1411 tty7     Sl     0:00 /usr/lib/ibus/ibus-dconf
+ 1414 tty7     Sl     0:00 /usr/lib/ibus/ibus-x11 --kill-daemon
+ 1455 tty7     Sl     0:00 /usr/lib/ibus/ibus-engine-simple
+ 1484 tty1     Ss+    0:00 /sbin/agetty --noclear tty1 linux
+ 7131 pts/4    Ss+    0:00 bash
+ 7502 pts/3    Ss     0:00 bash
+10239 pts/3    S+     0:00 /usr/bin/perl ./sdriver.pl -t trace12.txt -s ./tshref -a -p
+10240 pts/3    S+     0:00 ./tshref -p
+10242 pts/3    T      0:00 ./mysplit 4
+10243 pts/3    T      0:00 ./mysplit 4
+10246 pts/3    R      0:00 /bin/ps a
+
+
+
+zach@pendrive:~/Documents/CS392/Final Project/shlab-handout$ ./sdriver.pl -t trace13.txt -s ./tshref -a "-p"
+#
+# trace13.txt - Restart every stopped process in process group
+#
+tsh> ./mysplit 4
+Job [1] (10253) stopped by signal 20
+tsh> jobs
+[1] (10253) Stopped ./mysplit 4
+tsh> /bin/ps a
+  PID TTY      STAT   TIME COMMAND
+ 1251 tty7     Ssl+   0:00 /usr/lib/gdm3/gdm-x-session /usr/bin/gnome-session --autostart /usr/share/gdm/greeter/autostart
+ 1253 tty7     Sl+    0:01 /usr/lib/xorg/Xorg vt7 -displayfd 3 -auth /run/user/120/gdm/Xauthority -background none -noreset -keeptty -verbose 3
+ 1258 tty7     S+     0:00 dbus-daemon --print-address 4 --session
+ 1261 tty7     Sl+    0:00 /usr/lib/gnome-session/gnome-session-binary --autostart /usr/share/gdm/greeter/autostart
+ 1266 tty7     Sl+    0:00 /usr/lib/at-spi2-core/at-spi-bus-launcher
+ 1271 tty7     S+     0:00 /usr/bin/dbus-daemon --config-file=/etc/at-spi2/accessibility.conf --nofork --print-address 3
+ 1273 tty7     Sl+    0:00 /usr/lib/at-spi2-core/at-spi2-registryd --use-gnome-session
+ 1287 tty7     Sl+    0:00 /usr/lib/gnome-settings-daemon/gnome-settings-daemon
+ 1329 tty7     Sl+    0:01 gnome-shell --mode=gdm
+ 1406 tty7     Sl     0:00 ibus-daemon --xim --panel disable
+ 1411 tty7     Sl     0:00 /usr/lib/ibus/ibus-dconf
+ 1414 tty7     Sl     0:00 /usr/lib/ibus/ibus-x11 --kill-daemon
+ 1455 tty7     Sl     0:00 /usr/lib/ibus/ibus-engine-simple
+ 1484 tty1     Ss+    0:00 /sbin/agetty --noclear tty1 linux
+ 7131 pts/4    Ss+    0:00 bash
+ 7502 pts/3    Ss     0:00 bash
+10250 pts/3    S+     0:00 /usr/bin/perl ./sdriver.pl -t trace13.txt -s ./tshref -a -p
+10251 pts/3    S+     0:00 ./tshref -p
+10253 pts/3    T      0:00 ./mysplit 4
+10254 pts/3    T      0:00 ./mysplit 4
+10257 pts/3    R      0:00 /bin/ps a
+tsh> fg %1
+tsh> /bin/ps a
+  PID TTY      STAT   TIME COMMAND
+ 1251 tty7     Ssl+   0:00 /usr/lib/gdm3/gdm-x-session /usr/bin/gnome-session --autostart /usr/share/gdm/greeter/autostart
+ 1253 tty7     Sl+    0:01 /usr/lib/xorg/Xorg vt7 -displayfd 3 -auth /run/user/120/gdm/Xauthority -background none -noreset -keeptty -verbose 3
+ 1258 tty7     S+     0:00 dbus-daemon --print-address 4 --session
+ 1261 tty7     Sl+    0:00 /usr/lib/gnome-session/gnome-session-binary --autostart /usr/share/gdm/greeter/autostart
+ 1266 tty7     Sl+    0:00 /usr/lib/at-spi2-core/at-spi-bus-launcher
+ 1271 tty7     S+     0:00 /usr/bin/dbus-daemon --config-file=/etc/at-spi2/accessibility.conf --nofork --print-address 3
+ 1273 tty7     Sl+    0:00 /usr/lib/at-spi2-core/at-spi2-registryd --use-gnome-session
+ 1287 tty7     Sl+    0:00 /usr/lib/gnome-settings-daemon/gnome-settings-daemon
+ 1329 tty7     Sl+    0:01 gnome-shell --mode=gdm
+ 1406 tty7     Sl     0:00 ibus-daemon --xim --panel disable
+ 1411 tty7     Sl     0:00 /usr/lib/ibus/ibus-dconf
+ 1414 tty7     Sl     0:00 /usr/lib/ibus/ibus-x11 --kill-daemon
+ 1455 tty7     Sl     0:00 /usr/lib/ibus/ibus-engine-simple
+ 1484 tty1     Ss+    0:00 /sbin/agetty --noclear tty1 linux
+ 7131 pts/4    Ss+    0:00 bash
+ 7502 pts/3    Ss     0:00 bash
+10250 pts/3    S+     0:00 /usr/bin/perl ./sdriver.pl -t trace13.txt -s ./tshref -a -p
+10251 pts/3    S+     0:00 ./tshref -p
+10260 pts/3    R      0:00 /bin/ps a
+
+
+
+zach@pendrive:~/Documents/CS392/Final Project/shlab-handout$ ./sdriver.pl -t trace14.txt -s ./tshref -a "-p"
+#
+# trace14.txt - Simple error handling
+#
+tsh> ./bogus
+./bogus: Command not found
+tsh> ./myspin 4 &
+[1] (10289) ./myspin 4 &
+tsh> fg
+fg command requires PID or %jobid argument
+tsh> bg
+bg command requires PID or %jobid argument
+tsh> fg a
+fg: argument must be a PID or %jobid
+tsh> bg a
+bg: argument must be a PID or %jobid
+tsh> fg 9999999
+(9999999): No such process
+tsh> bg 9999999
+(9999999): No such process
+tsh> fg %2
+%2: No such job
+tsh> fg %1
+Job [1] (10289) stopped by signal 20
+tsh> bg %2
+%2: No such job
+tsh> bg %1
+[1] (10289) ./myspin 4 &
+tsh> jobs
+[1] (10289) Running ./myspin 4 &
+
+
+
+zach@pendrive:~/Documents/CS392/Final Project/shlab-handout$ ./sdriver.pl -t trace15.txt -s ./tshref -a "-p"
+#
+# trace15.txt - Putting it all together
+#
+tsh> ./bogus
+./bogus: Command not found
+tsh> ./myspin 10
+Job [1] (10308) terminated by signal 2
+tsh> ./myspin 3 &
+[1] (10310) ./myspin 3 &
+tsh> ./myspin 4 &
+[2] (10312) ./myspin 4 &
+tsh> jobs
+[1] (10310) Running ./myspin 3 &
+[2] (10312) Running ./myspin 4 &
+tsh> fg %1
+Job [1] (10310) stopped by signal 20
+tsh> jobs
+[1] (10310) Stopped ./myspin 3 &
+[2] (10312) Running ./myspin 4 &
+tsh> bg %3
+%3: No such job
+tsh> bg %1
+[1] (10310) ./myspin 3 &
+tsh> jobs
+[1] (10310) Running ./myspin 3 &
+[2] (10312) Running ./myspin 4 &
+tsh> fg %1
+tsh> quit

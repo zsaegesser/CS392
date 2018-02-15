@@ -1,0 +1,36 @@
+form:
+  <target>:<prerequisotes...>
+        <commands>
+
+ex/
+  source: source.c
+    gcc source.c -o source
+
+Variables:
+$@ target current rule
+$< input file
+$^ the list of all input files
+$? all input files newer than the target
+$$ the $literal-if you need it
+$(wildcard patterns...)ex/ *.c
+$(shell cmd)
+
+Old Fashioned SUffix rules
+  .cpp.o .c.o:
+    $(CC)$(CFLAGS) -c $< -o $@
+  THings not done like this anymore (not sure why)
+
+Implicit RUles -todays version
+  foo: foo.o bar.o
+    $(CC) -o $@ $@ $^ $(CFLAGS) $(LDFLAGS)
+
+GOOD EXAMPLE IN SLIDES FOR MAKEFILE
+try replacing = with :=
+
+third line takes the .c and makes it .o (object files)
+-g for gdb dont put -O3
+LDFLAGS are linking flags
+
+all: standard target
+
+clean: what to do when cleaning BE CAREFUL
